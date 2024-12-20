@@ -11,7 +11,7 @@ def parse_requirements(filename):
 
 
 setuptools.setup(
-    name="ApolloCathin",
+    name="Cathin",
     version="2.0.1",
     author="Hank Huang",
     author_email="hanhuang@jabra.com",

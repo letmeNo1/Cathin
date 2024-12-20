@@ -113,12 +113,22 @@ def main():
         from PIL import Image
         from tensorflow.keras.preprocessing import image
         from tensorflow.keras.models import load_model
-        from cathin.model_service.class_type import var
+        from cathin.common.class_type import var
 
         # Initialize PaddleOCR with default language as 'en'
         ocr = None
+        current_file_path = os.path.abspath(__file__)
 
-        florence_2_base_weights_path, florence_2_base_processor_path, ico_recognition_model_path = check_and_download_models()
+        # 获取当前脚本所在目录
+        current_dir = os.path.dirname(current_file_path)
+
+        # 构造 model 文件夹的路径
+        model_dir = os.path.join(current_dir, '..', 'model')
+
+        # 转换为绝对路径（防止 .. 的相对路径问题）
+        model_dir = os.path.abspath(model_dir)
+        florence_2_base_weights_path = model_dir + "/florence2_weights"
+        florence_2_base_processor_path = model_dir + "/florence2_base_processor"
 
         # Check if GPU is available
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -128,7 +138,7 @@ def main():
                                                      torch_dtype=torch.float16 if device == 'cuda' else torch.float32,
                                                      trust_remote_code=True).to(device)
 
-        ico_recognition_model_path = ico_recognition_model_path + '/ico_recognition_model.h5'
+        ico_recognition_model_path = model_dir + 'ico_recognition_model/ico_recognition_model.h5'
         class_detection_model = load_model(ico_recognition_model_path)
 
         CONFIG_FILE = 'model_lib/config.json'

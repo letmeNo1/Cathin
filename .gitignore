@@ -161,3 +161,5 @@ cython_debug/
 /.idea
 /model/florence_2_base_processor_v1_0
 /model/florence_weights_v1_0
+/cathin/model/florence2_weights
+/cathin/model/florence2_base_processor
