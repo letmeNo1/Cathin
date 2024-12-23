@@ -127,18 +127,17 @@ def main():
 
         # 转换为绝对路径（防止 .. 的相对路径问题）
         model_dir = os.path.abspath(model_dir)
-        florence_2_base_weights_path = model_dir + "/florence2_weights"
-        florence_2_base_processor_path = model_dir + "/florence2_base_processor"
+        florence_2_base = os.path.join(model_dir, "Florence-2-base")
 
         # Check if GPU is available
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        processor = AutoProcessor.from_pretrained(florence_2_base_processor_path, trust_remote_code=True)
-        model = AutoModelForCausalLM.from_pretrained(florence_2_base_weights_path,
+        processor = AutoProcessor.from_pretrained(florence_2_base, trust_remote_code=True)
+        model = AutoModelForCausalLM.from_pretrained(florence_2_base,
                                                      torch_dtype=torch.float16 if device == 'cuda' else torch.float32,
                                                      trust_remote_code=True).to(device)
 
-        ico_recognition_model_path = model_dir + 'ico_recognition_model/ico_recognition_model.h5'
+        ico_recognition_model_path = os.path.join(model_dir, 'ico_recognition_model', 'ico_recognition_model.h5')
         class_detection_model = load_model(ico_recognition_model_path)
 
         CONFIG_FILE = 'model_lib/config.json'
@@ -322,3 +321,7 @@ def main():
         # Close the process running on the port specified in the config.json
         config = load_config()
         find_and_kill_process(config['port'])
+
+
+if __name__ == "__main__":
+    main()

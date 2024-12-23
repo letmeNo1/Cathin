@@ -163,3 +163,4 @@ cython_debug/
 /model/florence_weights_v1_0
 /cathin/model/florence2_weights
 /cathin/model/florence2_base_processor
+cathin/model/Florence-2-base/pytorch_model.bin
