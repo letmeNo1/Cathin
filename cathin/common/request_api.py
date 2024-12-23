@@ -7,7 +7,6 @@ import socket
 
 from cathin.common.config import read_port, get_config_file_path, update_port
 
-
 SERVER_START_TIMEOUT = 300  # 5 minutes
 SEARCH_TIMEOUT = 10  # 10 seconds
 
@@ -136,7 +135,7 @@ def _wait_for_server_to_start(timeout=SERVER_START_TIMEOUT):
     return False
 
 
-def _start_server():
+def _start_server(lang="en"):
     if __check_service_health():
         logger.info("Service is already running")
         return
@@ -158,7 +157,7 @@ def _start_server():
         with open(log_file_path, "w") as log_file:
             # 启动子进程，并将标准输出和标准错误输出重定向到日志文件
             subprocess.Popen(
-                ["ai_server","-r", f"--port={port}"],
+                ["ai_server", "-r", f"--port={port}",f"--lang={lang}"],
                 stdout=log_file,
                 stderr=log_file
             )

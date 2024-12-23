@@ -7,15 +7,16 @@ import json
 import sys
 
 
-def get_cache_dir():
-    home_dir = os.path.expanduser('~')
-    # Join .cache directory
-    cache_dir = os.path.join(home_dir, '.cache')
-    return cache_dir
+def get_current_path():
+    current_file_path = os.path.abspath(__file__)
+
+    # 获取当前脚本所在目录
+    current_dir = os.path.dirname(current_file_path)
+    return current_dir
 
 
-def load_config(config_file='model_lib/config.json'):
-    path = os.path.join(get_cache_dir(), config_file)
+def load_config(config_file='config.json'):
+    path = os.path.join(get_current_path(), config_file)
     try:
         with open(path, 'r') as f:
             config = json.load(f)
@@ -84,6 +85,18 @@ def check_libraries():
         sys.exit()
 
 
+def check_pytorch_model(path):
+    # 拼接文件路径
+    file_path = os.path.join(path, 'pytorch_model.bin')
+
+    # 检查文件是否存在
+    if os.path.isfile(file_path):
+        logger.debug(f"File 'pytorch_model.bin' exists in the directory: {path}")
+    else:
+        logger.error(
+            f"File 'pytorch_model.bin' does not exist in the directory: {path}, please download the model file from https://huggingface.co/microsoft/Florence-2-base/tree/main.")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Manage FastAPI OCR server.")
     parser.add_argument("-r", "--run", action="store_true", help="Run the FastAPI server")
@@ -95,7 +108,7 @@ def main():
     args = parser.parse_args()
 
     if args.run:
-        check_libraries()
+
         import json
         import os
         import traceback
@@ -115,19 +128,16 @@ def main():
         from tensorflow.keras.models import load_model
         from cathin.common.class_type import var
 
+        model_dir = os.path.join(get_current_path(), '..', 'model')
+
+        florence_2_base = os.path.join(model_dir, "Florence-2-base")
+        check_libraries()
+        check_pytorch_model(florence_2_base)
         # Initialize PaddleOCR with default language as 'en'
         ocr = None
-        current_file_path = os.path.abspath(__file__)
-
-        # 获取当前脚本所在目录
-        current_dir = os.path.dirname(current_file_path)
 
         # 构造 model 文件夹的路径
-        model_dir = os.path.join(current_dir, '..', 'model')
 
-        # 转换为绝对路径（防止 .. 的相对路径问题）
-        model_dir = os.path.abspath(model_dir)
-        florence_2_base = os.path.join(model_dir, "Florence-2-base")
 
         # Check if GPU is available
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

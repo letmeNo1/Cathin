@@ -4,17 +4,17 @@ import time
 import numpy as np
 
 import cv2
-# from cathin.common.request_api import _start_server
 
 from cathin.Android.element import LazyElement
 from cathin.common.find_method import find_by_method
 from cathin.common.get_all_bounds_and_labels import get_all_bounds_and_labels
+from cathin.common.request_api import _start_server
 
 
 class AndroidDriver:
-    def __init__(self, udid):
+    def __init__(self, udid, lang="en"):
         self.udid = udid
-        # _start_server()
+        _start_server(lang)
 
     def __capture_screenshot(self):
         result = subprocess.run(['adb', '-s', self.udid, 'exec-out', 'screencap', '-p'], stdout=subprocess.PIPE)
