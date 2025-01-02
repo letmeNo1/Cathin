@@ -1,4 +1,7 @@
 import argparse
+import subprocess
+import zipfile
+
 from loguru import logger
 
 import psutil
@@ -11,7 +14,7 @@ def get_current_path():
     current_file_path = os.path.abspath(__file__)
 
     # 获取当前脚本所在目录
-    current_dir = os.path.dirname(current_file_path)
+    current_dir = os.path.dirname(current_file_path).replace("console_scripts", "")
     return current_dir
 
 
@@ -70,31 +73,54 @@ def find_and_kill_process(port):
     logger.debug(f"No process found occupying port {port}.")
 
 
-def check_libraries():
+def check_and_install_libraries():
     try:
         import transformers
         logger.debug("transformers is installed.")
     except ImportError:
-        logger.error("transformers is not installed. Please install it using: pip install paddlepaddle")
-        sys.exit()
+        logger.error("transformers is not installed. Attempting to install...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install",  "transformers"])
+
     try:
         import paddle
         logger.debug("paddlepaddle is installed.")
     except ImportError:
-        logger.error("paddlepaddle is not installed. Please install it using: pip install paddlepaddle")
-        sys.exit()
+        logger.error("paddlepaddle is not installed. Attempting to install...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "paddlepaddle"])
+
+def download_and_extract(url, extract_to):
+    # 下载文件
+    local_filename = url.split('/')[-1]
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        with open(local_filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+
+    # 解压文件
+    with zipfile.ZipFile(local_filename, 'r') as zip_ref:
+        zip_ref.extractall(extract_to)
+
+    # 删除下载的zip文件
+    os.remove(local_filename)
 
 
-def check_pytorch_model(path):
-    # 拼接文件路径
-    file_path = os.path.join(path, 'pytorch_model.bin')
-
+def check_florence_model(path):
+    model_path = os.path.join(path,"Florence-2-base")
     # 检查文件是否存在
-    if os.path.isfile(file_path):
-        logger.debug(f"File 'pytorch_model.bin' exists in the directory: {path}")
+    if os.path.isdir(model_path):
+        logger.debug(f"File Florence exists in the directory: {model_path}")
     else:
         logger.error(
-            f"File 'pytorch_model.bin' does not exist in the directory: {path}, please download the model file from https://huggingface.co/microsoft/Florence-2-base/tree/main.")
+            f"Florence does not exist in the directory: {model_path}, please download the model file from https://huggingface.co/microsoft/Florence-2-base/tree/main.")
+        sys.exit(1)
+        # # 下载并解压文件
+        # logger.debug(f"Auto downloading and extracting Florence model to: {path}")
+        #
+        # download_url = "http://10.86.214.157:8000/AI_model/Florence-2-base.zip"
+        # download_and_extract(download_url, path)
+        # logger.debug(f"Downloaded and extracted Florence model to: {path}")
+    return model_path
 
 
 def main():
@@ -108,9 +134,11 @@ def main():
     args = parser.parse_args()
 
     if args.run:
+        model_dir = os.path.join(get_current_path(), 'model')
 
+        check_and_install_libraries()
+        florence_2_base = check_florence_model(model_dir)
         import json
-        import os
         import traceback
         import numpy as np
         import uvicorn
@@ -128,16 +156,11 @@ def main():
         from tensorflow.keras.models import load_model
         from cathin.common.class_type import var
 
-        model_dir = os.path.join(get_current_path(), '..', 'model')
 
-        florence_2_base = os.path.join(model_dir, "Florence-2-base")
-        check_libraries()
-        check_pytorch_model(florence_2_base)
         # Initialize PaddleOCR with default language as 'en'
         ocr = None
 
         # 构造 model 文件夹的路径
-
 
         # Check if GPU is available
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -150,7 +173,7 @@ def main():
         ico_recognition_model_path = os.path.join(model_dir, 'ico_recognition_model', 'ico_recognition_model.h5')
         class_detection_model = load_model(ico_recognition_model_path)
 
-        CONFIG_FILE = 'model_lib/config.json'
+        CONFIG_FILE = os.path.join(model_dir,'config.json')
 
         def save_config(port, lang):
             config_data = {
@@ -194,36 +217,22 @@ def main():
             :param prompt: str - Prompt.
             :return: List[str] - List of descriptions.
             """
-            prompt = prompt or "The image shows"
-            generated_texts = []
-            device = model.device
+            cropped_images.show()
+            prompt = "Describe this image."
 
-            # Process images in batches, with a maximum of 10 images per batch
-            batch_size = 10
-            for i in range(0, len(cropped_images), batch_size):
-                batch_images = cropped_images[i:i + batch_size]
-                inputs = processor(images=batch_images, text=[prompt] * len(batch_images), return_tensors="pt",
-                                   padding=True).to(device)
+            # Preprocess the image and generate the caption
+            inputs = processor(images=cropped_images, text=prompt, return_tensors="pt").to(
+                "cuda" if torch.cuda.is_available() else "cpu")
+            outputs = model.generate(**inputs)
 
-                # Convert pixel values to float16
-                # inputs['pixel_values'] = inputs['pixel_values'].half()
-
-                generated_ids = model.generate(**inputs, max_length=100, num_beams=5, no_repeat_ngram_size=2,
-                                               early_stopping=True)
-                generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)
-                generated_texts.extend([text.strip() for text in generated_text])
-            return generated_texts
+            # Decode the caption
+            description = processor.decode(outputs[0], skip_special_tokens=True)
+            return description
 
         app = FastAPI()
 
-        class PredictionRequest(BaseModel):
-            input_text: str
-            num_return_sequences: int = 1
-            num_beams: int = 1
-            do_sample: bool = False
-
         class ImageRequest(BaseModel):
-            images: List[str]
+            images: str
             prompt: str = "The image shows"
 
         class ImageData(BaseModel):
@@ -301,13 +310,11 @@ def main():
             cropped_images = []
 
             try:
-                for img_str in images_base64:
-                    img_data = base64.b64decode(img_str)
-                    img = Image.open(BytesIO(img_data)).convert("RGB")  # Decode from base64 and convert to RGB
-                    cropped_images.append(img)
+                img_data = base64.b64decode(images_base64)
+                img = Image.open(BytesIO(img_data)).convert("RGB")
 
                 prompt = request.prompt
-                descriptions = generate_captions_from_images(cropped_images, prompt)
+                descriptions = generate_captions_from_images(img, prompt)
                 return JSONResponse(content={'descriptions': descriptions}, status_code=200)
 
             except Exception as e:
@@ -333,5 +340,4 @@ def main():
         find_and_kill_process(config['port'])
 
 
-if __name__ == "__main__":
-    main()
+main()

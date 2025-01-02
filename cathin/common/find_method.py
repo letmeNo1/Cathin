@@ -58,7 +58,7 @@ def search_data(data, **query):
             return [data[search_value]]
 
     if len(found_keys_values) == 0:
-        raise ValueNotFoundError(f"Query '{search_value}' not found in current page")
+        raise TimeoutNotFoundError(f"Query '{search_value}' not found in current page")
     return found_keys_values
 
 

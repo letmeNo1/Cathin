@@ -11,7 +11,7 @@ SERVER_START_TIMEOUT = 300  # 5 minutes
 SEARCH_TIMEOUT = 10  # 10 seconds
 
 
-def _call_generate_image_caption_api(cropped_images_base64, prompt="The image shows"):
+def _call_generate_image_caption_api(cropped_images_base64, prompt="Describe this image."):
     PORT = read_port()
     SERVER_URL = f"http://127.0.0.1:{PORT}"
     GENERATE_CAPTION = f"{SERVER_URL}/generate_image_caption"

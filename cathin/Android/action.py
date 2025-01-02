@@ -82,7 +82,7 @@ class Action:
         logger.debug(f"long click {x} {y}")
 
     def set_text(self, text, append=False, x_offset=None, y_offset=None):
-        len_of_text = len(self.text) if self.text is not None else 20
+        len_of_text = 0 if self.text is None else len(self.text)
         self.click(x_offset=x_offset, y_offset=y_offset)
         os.system(f'adb -s {self.udid} shell input keyevent KEYCODE_MOVE_END')
         del_cmd = f'adb -s {self.udid} shell input keyevent'
