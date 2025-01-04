@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import Scrollbar, Toplevel, ttk, Button, messagebox
 from cathin.Android.android_driver import AndroidDriver
 from cathin.common.get_all_bounds_and_labels import get_all_bounds_and_labels
-from ApolloModule.ApolloCathin.cathin.console_scripts.cat_ui.image_porcessor import ImageProcessor
+from cathin.console_scripts.cat_ui.image_porcessor import ImageProcessor
 
 loading_window_ref = None
 
