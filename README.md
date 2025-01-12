@@ -2,29 +2,10 @@ Cathin - Automated Testing for all
 =================================
 Cathin is an automated testing framework built on OCR, image classification models, and image description generation models. It supports Android, iOS, Windows, and Mac.
 
-Background
-==========
-
-Install 
-===============
-
-```
-pip config set global.extra-index-url https://3gii3rz2ra5x4lwjejx7lxhh3ihpvtoqm4ccddmz5gdjea7xxkya@gnaudio.pkgs.visualstudio.com/ESW/_packaging/ApolloModules/pypi/simple/
-
-pip config set global.trusted-host pkgs.dev.azure.com
-
-pip install ApolloCathin
-
-pip install tensorflow
-
-pip install paddlepaddle
-```
-
-
 Element locate
 ===============
 
-Input `cat_ui -s {udid}` at  command line
+Input `cat_ui` at  command line
 
 
 if success, it will start a server to show UI inspector
@@ -38,17 +19,6 @@ from cathin.Android.android_driver import AndroidDriver
 
 
 cat = AndroidDriver(udid)
-```
-
-or
-```
-from apollo_base.cathin_base import CathinBase
-
-class YourClass(CathinBase):
-    super().__init__()
-
-def your_function
-    self.cat(text= Teams")
 ```
 
 ## iOS initialize by udid
