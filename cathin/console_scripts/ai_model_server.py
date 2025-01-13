@@ -165,7 +165,7 @@ def main():
         # Check if GPU is available
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        processor = AutoProcessor.from_pretrained("microsoft/Florence-2-base", trust_remote_code=True)
+        processor = AutoProcessor.from_pretrained(os.path.join(model_dir,"florence_2"), trust_remote_code=True)
         model = AutoModelForCausalLM.from_pretrained(florence_2_base,
                                                      torch_dtype=torch.float16 if device == 'cuda' else torch.float32,
                                                      trust_remote_code=True).to(device)
