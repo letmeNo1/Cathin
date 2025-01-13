@@ -79,7 +79,7 @@ def check_and_install_libraries():
         logger.debug("transformers is installed.")
     except ImportError:
         logger.error("transformers is not installed. Attempting to install...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install",  "transformers"])
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "transformers"])
 
     try:
         import paddle
@@ -87,6 +87,7 @@ def check_and_install_libraries():
     except ImportError:
         logger.error("paddlepaddle is not installed. Attempting to install...")
         subprocess.check_call([sys.executable, "-m", "pip", "install", "paddlepaddle"])
+
 
 def download_and_extract(url, extract_to):
     # 下载文件
@@ -106,7 +107,7 @@ def download_and_extract(url, extract_to):
 
 
 def check_florence_model(path):
-    model_path = os.path.join(path,"Florence-2-base")
+    model_path = os.path.join(path, "Florence-2-base")
     # 检查文件是否存在
     if os.path.isdir(model_path):
         logger.debug(f"File Florence exists in the directory: {model_path}")
@@ -149,13 +150,11 @@ def main():
         from transformers import AutoProcessor, AutoModelForCausalLM
         import base64
         from io import BytesIO
-        from typing import List
         from paddleocr import PaddleOCR
         from PIL import Image
         from tensorflow.keras.preprocessing import image
         from tensorflow.keras.models import load_model
         from cathin.common.class_type import var
-
 
         # Initialize PaddleOCR with default language as 'en'
         ocr = None
@@ -165,7 +164,7 @@ def main():
         # Check if GPU is available
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        processor = AutoProcessor.from_pretrained(os.path.join(model_dir,"florence_2"), trust_remote_code=True)
+        processor = AutoProcessor.from_pretrained(os.path.join(model_dir, "florence_2"), trust_remote_code=True)
         model = AutoModelForCausalLM.from_pretrained(florence_2_base,
                                                      torch_dtype=torch.float16 if device == 'cuda' else torch.float32,
                                                      trust_remote_code=True).to(device)
@@ -173,7 +172,7 @@ def main():
         ico_recognition_model_path = os.path.join(model_dir, 'ico_recognition_model', 'ico_recognition_model.h5')
         class_detection_model = load_model(ico_recognition_model_path)
 
-        CONFIG_FILE = os.path.join(model_dir,'config.json')
+        CONFIG_FILE = os.path.join(model_dir, 'config.json')
 
         def save_config(port, lang):
             config_data = {
