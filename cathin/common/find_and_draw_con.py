@@ -1,9 +1,11 @@
+import time
+
 import cv2
 import numpy as np
 from loguru import logger
 
 
-def show_resized_image(window_name, image, scale_percent=50, debug=True):
+def show_resized_image(window_name, image, scale_percent=40, debug=True):
     if debug:
         # 计算缩放后的尺寸
         width = int(image.shape[1] * scale_percent / 100)
@@ -58,7 +60,7 @@ def non_max_suppression(boxes, overlap_thresh):
 
 def process_image(image, debug=True, clip_limit=3.0, tile_grid_size=(16, 16), blur_kernel_size=(5, 5),
                   canny_threshold1=30, canny_threshold2=200, morph_kernel_size=(3, 3), dilate_iterations=3,
-                  erode_iterations=1, aspect_ratio_threshold=0.1, overlap_thresh=0.3):
+                  erode_iterations=1, aspect_ratio_threshold=0.1, overlap_thresh=1):
     # 增强对比度
     lab = cv2.cvtColor(image, cv2.COLOR_BGR2Lab)
     l, a, b = cv2.split(lab)
@@ -155,3 +157,15 @@ def process_image(image, debug=True, clip_limit=3.0, tile_grid_size=(16, 16), bl
     show_resized_image('Merged Boxes', merged_boxes_image, debug=debug)
 
     return boxes_and_labels
+
+image_path = r"C:\Users\Administrator\Documents\GitHub\vision-ui\capture\local_imagess\34.jpg"
+
+img = cv2.imread(image_path)
+
+
+start_time = time.time()
+process_image(img,debug=False)
+end_time = time.time()
+
+elapsed_time = end_time - start_time
+print(f"处理图像耗时: {elapsed_time} 秒")
