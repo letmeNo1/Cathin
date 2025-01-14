@@ -160,5 +160,9 @@ cython_debug/
 #.idea/
 /.idea
 /model/florence_weights_v1_0
-/cathin/model/florence_2_weights
+/cathin/model/florence_2_weight/*
 cathin/model/Florence-2-base/pytorch_model.bin
+cathin/model/florence_2_weights/model.safetensors
+cathin/model/florence_2_weights/LICENSE
+cathin/model/florence_2_weights/generation_config.json
+cathin/model/florence_2_weights/config.json
