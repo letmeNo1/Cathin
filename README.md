@@ -9,13 +9,16 @@ Cathin - 全平台自动化测试框架
 ===============
 Cathin是一个基于OCR、图像分类模型和图像描述生成模型构建的自动化测试框架。它支持安卓、iOS、Windows和Mac平台。
 
+前置条件
+===============
+从https://huggingface.co/microsoft/Florence-2-base/tree/main 下载模型权重文件放置在florence_2_weights
+
+然后运行 cathin/console_scripts/ai_model_server.py 来启动模型服务，默认端口号8080
+
 元素定位
 ===============
 
-在命令行输入`cat_ui`。
-
-
-如果成功，它将启动一个服务器以显示UI检查器。
+运行 cathin/console_scripts/cat_ui/main.py
 
 使用方法
 ==========
