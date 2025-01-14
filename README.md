@@ -1,5 +1,150 @@
+
+-   [English](#Introuduce)
+-   [中文版](#介绍)
+  
+Cathin - 全平台自动化测试框架
+=================================
+
+介绍
+===============
+Cathin是一个基于OCR、图像分类模型和图像描述生成模型构建的自动化测试框架。它支持安卓、iOS、Windows和Mac平台。
+
+元素定位
+===============
+
+在命令行输入`cat_ui`。
+
+
+如果成功，它将启动一个服务器以显示UI检查器。
+
+使用方法
+==========
+
+## 安卓：通过udid初始化
+ ```
+from cathin.Android.android_driver import AndroidDriver
+
+
+cat = AndroidDriver(udid)
+```
+
+## iOS：通过udid初始化
+
+
+## 查找方法
+使用文本定位元素，适用于所有能被OCR识别的文本。
+```python
+from cathin.Android.android_driver import AndroidDriver
+
+cat = AndroidDriver("udid")
+cat(text="文本")
+```
+
+对于所有不能被OCR识别的部分，例如图标，其ID通常是由图像分类生成的唯一标识符。
+（注意：由于识别准确率仅约为70%，该ID不能完全描述图标，仅作为唯一标识符。如需更精确的描述，请使用`cat(id="id").description`，它将调用图像描述生成模型来提供图标的确切描述。）
+```python
+from cathin.Android.android_driver import AndroidDriver
+
+cat = AndroidDriver("udid")
+cat(id="id")
+```
+
+你也可以使用方向定位，通过`left(索引)`、`right(索引)`、`up(索引)`和`down(索引)`，
+其中索引从1开始，默认值为1。
+```python
+from cathin.Android.android_driver import AndroidDriver
+
+cat = AndroidDriver("udid")
+cat(text="文本").left()
+cat(text="文本").right()
+cat(text="文本").up()
+cat(text="文本").down()
+cat(text="文本").left(2)
+cat(text="文本").right(2)
+cat(text="文本").up(2)
+cat(text="文本").down(2)
+```
+
+## 操作方法
+
+Action类提供了多种与UI元素交互的方法。以下是可用的方法：
+
+### 点击
+点击元素。如有需要，可指定偏移量。
+
+```python
+from cathin.Android.android_driver import AndroidDriver
+cat = AndroidDriver("udid")
+
+cat(text="文本").click()
+cat(text="文本").click(x_offset=10, y_offset=20)
+```
+
+### 长按
+长按元素指定时长。
+
+```python
+from cathin.Android.android_driver import AndroidDriver
+cat = AndroidDriver("udid")
+
+cat(text="文本").long_click(duration=2)
+cat(text="文本").long_click(duration=2, x_offset=10, y_offset=20)
+```
+
+### 滚动
+沿指定方向滚动指定时长。
+
+```python
+from cathin.Android.android_driver import AndroidDriver
+cat = AndroidDriver("udid")
+
+cat(text="文本").scroll(direction='竖直向上', duration=200)
+cat(text="文本").scroll(direction='水平向左', duration=200)
+```
+
+### 滑动
+从元素中心滑动到指定坐标。
+
+```python
+from cathin.Android.android_driver import AndroidDriver
+cat = AndroidDriver("udid")
+
+cat(text="文本").swipe(to_x=100, to_y=200, duration=0.5)
+```
+
+### 拖拽
+从元素中心拖拽到指定坐标。
+
+```python
+from cathin.Android.android_driver import AndroidDriver
+cat = AndroidDriver("udid")
+cat(text="文本").drag(to_x=100, to_y=200, duration=1)
+```
+
+### 设置文本
+在输入字段中设置文本。可以选择追加文本或替换文本。
+
+```python
+from cathin.Android.android_driver import AndroidDriver
+cat = AndroidDriver("udid")
+cat(text="文本").set_text("新文本")
+cat(text="文本").set_text("新文本", append=True)
+```
+
+### 设置进度条
+将进度条的值设置为指定百分比。
+
+```python
+from cathin.Android.android_driver import AndroidDriver
+cat = AndroidDriver("udid")
+cat(text="文本").set_seek_bar(percentage=0.5)
+```
+
 Cathin - Automated Testing for all
 =================================
+
+Introuduce
+===============
 Cathin is an automated testing framework built on OCR, image classification models, and image description generation models. It supports Android, iOS, Windows, and Mac.
 
 Element locate
@@ -137,3 +282,5 @@ from cathin.Android.android_driver import AndroidDriver
 cat = AndroidDriver("udid")
 cat(text="text").set_seek_bar(percentage=0.5)
 ```
+
+
