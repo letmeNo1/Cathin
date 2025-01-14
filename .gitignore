@@ -159,8 +159,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 /.idea
-/model/florence_2_base_processor_v1_0
 /model/florence_weights_v1_0
-/cathin/model/florence2_weights
-/cathin/model/florence2_base_processor
+/cathin/model/florence_2_weights
 cathin/model/Florence-2-base/pytorch_model.bin
