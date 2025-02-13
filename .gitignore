@@ -166,3 +166,4 @@ cathin/model/florence_2_weights/model.safetensors
 cathin/model/florence_2_weights/LICENSE
 cathin/model/florence_2_weights/generation_config.json
 cathin/model/florence_2_weights/config.json
+cathin_server/model/florence_2_weights/model.safetensors
