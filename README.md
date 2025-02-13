@@ -27,6 +27,9 @@ docker run -d --restart always -p 8080:8080 -e PORT=8080 hank550/cathin_server:l
 
 命令行执行 cat_ui
 
+![image](https://github.com/user-attachments/assets/f10cbec3-6485-4430-bfc0-995dacec7a26)
+
+
 使用方法
 ==========
 
@@ -162,9 +165,7 @@ Element locate
 
 Input `cat_ui` at  command line
 
-
-if success, it will start a server to show UI inspector
-
+![image](https://github.com/user-attachments/assets/f10cbec3-6485-4430-bfc0-995dacec7a26)
 Usage
 ==========
 
