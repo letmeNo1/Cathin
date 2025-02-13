@@ -17,12 +17,13 @@ class Element(Action):
         self.all_bounds = result_data.get("all_bounds")
         self.img = result_data.get("img")
         self.udid = result_data.get("udid")
+        self.package_name = result_data.get("package_name")
         self.index = found_element_data[0]
         self.bounds = found_element_data[1]
         self.text = found_element_data[2]
         self.attribute = Attribute("Android", result_data)
 
-        super().__init__(self.udid, self.bounds, self.text)
+        super().__init__(self.udid, self.bounds, self.text, self.package_name)
 
     def left(self, offset=1):
         return self.attribute.left(offset)

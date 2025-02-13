@@ -2,7 +2,7 @@ from loguru import logger
 
 
 class MultipleValuesFoundError(Exception):
-    """自定义异常类，用于在找到多个相同值时抛出异常"""
+    """Custom exception class for throwing an exception when multiple identical values are found"""
 
     def __init__(self, message, keys_values):
         super().__init__(message)
@@ -14,7 +14,7 @@ class MultipleValuesFoundError(Exception):
 
 
 class TimeoutNotFoundError(Exception):
-    """自定义异常类，用于在超时未找到匹配值时抛出异常"""
+    """Custom exception class for throwing an exception when a matching value is not found within a timeout"""
 
     def __init__(self, message):
         super().__init__(message)
@@ -45,13 +45,13 @@ def search_data(data, **query):
     for index, item in enumerate(data):
         for key, value in item.items():
             if method == 'text' and isinstance(value, str) and value.strip() == search_value:
-                found_keys_values.append((index, key, value))
+                found_keys_values.append([index, key, value])
             elif method == 'text_contains' and isinstance(value, str) and search_value in value:
-                found_keys_values.append((index, key, value))
+                found_keys_values.append([index, key, value])
             elif method == 'id' and isinstance(value, list) and value[0] == 'icon' and value[1] == search_value:
-                found_keys_values.append((index, key, value))
+                found_keys_values.append([index, key, value])
             elif method == 'id_contains' and isinstance(value, list) and value[0] == 'icon' and search_value in value[1]:
-                found_keys_values.append((index, key, value))
+                found_keys_values.append([index, key, value])
 
     if method == 'index':
         if 0 <= search_value < len(data):

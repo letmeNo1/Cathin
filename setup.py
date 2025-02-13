@@ -12,32 +12,24 @@ def parse_requirements(filename):
 
 setuptools.setup(
     name="Cathin",
-    version="2.0.1",
+    version="2.0.2",
     author="Hank Huang",
     author_email="hanhuang@jabra.com",
     description="Support Desktop/Mobile Automation",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
-
+    package_data={
+        'apollo_cathin': ['console_scripts/cat_ui_web/templates/*']
+    },
     install_requires=[
-        'paddleocr',
-        'fastapi',
-        'numpy',
-        'psutil',
-        'pydantic',
-        'transformers ',
-        'torch',
-        'scikit-learn',
-        'uvicorn',
-        'sentencepiece',
-        'protobuf==3.20.3',
-        'timm',
-        'einops',
-        "fastapi",
+        "flask==3.0.3",
+        'lxml==5.1.0',
+        'numpy==1.24.4',
         "opencv-python==4.6.0.66",
         "opencv-contrib-python==4.6.0.66",
-        'loguru==0.7.2'
+        'loguru==0.7.2',
+        'scikit-learn>=1.3.2'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -46,8 +38,7 @@ setuptools.setup(
     ],
     entry_points={
         'console_scripts': [
-            'ai_server = cathin.console_scripts.ai_model_server:main',
-            'cat_ui = cathin.console_scripts.cat_ui:main',
+            'cat_ui = apollo_cathin.console_scripts.cat_ui_web.main:main',
         ]
     },
 

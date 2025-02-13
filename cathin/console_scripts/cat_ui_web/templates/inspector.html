@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inspector</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #loading {
+            display: none;
+            position: fixed; /* Use fixed to cover the entire screen */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            font-size: 24px;
+            color: #007bff;
+            z-index: 1000; /* Ensure it is on top */
+        }
+        .container {
+            display: flex;
+            width: 80%;
+            max-width: 1000px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #imageContainer {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f9f9f9;
+        }
+        #imageContainer img {
+            max-width: 100%;
+            height: auto;
+        }
+        #textList {
+            flex: 1;
+            padding: 20px;
+            background-color: #fff;
+            overflow-y: auto;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ccc; /* Add bottom border */
+        }
+        button {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Loading...</div>
+    <div class="container">
+        <!-- Container for displaying images -->
+        <div id="imageContainer">
+            <img id="deviceImage" alt="Device Image" src=""/>
+        </div>
+        <!-- Text list -->
+        <div id="textList">
+            <ul id="infoList">
+                <!-- List items will be dynamically populated by JavaScript -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const platform = "{{ platform }}";
+        const device = "{{ device }}";
+        const language = "{{ language }}";
+
+        function fetchAndDisplayData() {
+            const loading = document.getElementById('loading');
+            const img = document.getElementById('deviceImage');
+            const infoList = document.getElementById('infoList');
+            const textList = document.getElementById('textList');
+            loading.style.display = 'block';
+
+            fetch('/get_image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ platform, device, language })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle image
+                const imgBase64 = data.image;
+                img.src = `data:image/png;base64,${imgBase64}`;
+                const container = document.querySelector('.container');
+
+                // Adjust text list height when the image is loaded
+                img.onload = function() {
+                    textList.style.height = img.clientHeight + 'px';
+                    if (img.naturalWidth > img.naturalHeight) {
+                        // Landscape image
+                        container.style.maxWidth = '100%';
+                        container.style.width = '100%';
+                    } else {
+                        // Portrait image
+                        container.style.maxWidth = '1000px';
+                    }
+                };
+
+                // Handle list data
+                infoList.innerHTML = ''; // Clear existing list items
+                data.list.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = Object.keys(item)[0];
+
+                    const bounds = JSON.stringify(Object.values(item)[0]);
+                    // Create button and add to list item
+                    const button = document.createElement('button');
+                    button.textContent = 'get description';
+                    button.setAttribute('bounds', bounds);
+                    button.onclick = function() {
+                        const bounds = JSON.parse(button.getAttribute('bounds'));
+
+                        console.log(bounds);
+                        loading.style.display = 'block';
+
+                        // Send request
+                        fetch('/get_description', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                platform: platform,
+                                device: device,
+                                language: language,
+                                bounds: bounds
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Success:', data);
+                            alert(`description: ${data}`);
+                            loading.style.display = 'none';
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                            loading.style.display = 'none';
+                        });
+                };
+
+                    li.appendChild(button);
+                    infoList.appendChild(li);
+                });
+                
+
+                loading.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                loading.style.display = 'none';
+            });
+        }
+
+        window.onload = fetchAndDisplayData;
+    </script>
+</body>
+</html>

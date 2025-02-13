@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Selection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 400px;
+            position: relative;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin: 15px 0 8px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        select, button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 18px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+         .loading {
+            display: none;
+            position: fixed; /* Use fixed to cover the entire screen */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            font-size: 24px;
+            color: #007bff;
+            z-index: 1000; /* Ensure it is on top */
+        }
+    </style>
+    <script>
+        function updateDeviceOptions() {
+            var platform = document.getElementById("platform").value;
+            fetchDevices(platform);
+        }
+
+        function fetchDevices(platform) {
+            var deviceSelect = document.getElementById("device");
+            var loading = document.getElementById("loading");
+
+            // Show loading indicator
+            loading.style.display = "block";
+
+            fetch('/get_devices', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ platform: platform })
+            })
+            .then(response => response.json())
+            .then(devices => {
+                // Hide loading indicator
+                loading.style.display = "none";
+
+                // Clear current device options
+                deviceSelect.innerHTML = "";
+
+                // Update device options based on the selected platform
+                devices.forEach(function(device) {
+                    var option = document.createElement("option");
+                    option.value = device;
+                    option.text = device;
+                    deviceSelect.add(option);
+                });
+            });
+        }
+
+        function redirectToInspector() {
+            var platform = document.getElementById("platform").value;
+            var device = document.getElementById("device").value;
+            var language = document.getElementById("language").value;
+
+            var url = `/inspector?platform=${encodeURIComponent(platform)}&device=${encodeURIComponent(device)}&language=${encodeURIComponent(language)}`;
+            window.location.href = url;
+        }
+
+        // Initialize device options when the page loads
+        window.onload = function() {
+            var defaultPlatform = document.getElementById("platform").value;
+            fetchDevices(defaultPlatform);
+        };
+    </script>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Platform Selection</h1>
+        <form onsubmit="event.preventDefault(); redirectToInspector();">
+            <label for="platform">Select Platform:</label>
+            <select name="platform" id="platform" onchange="updateDeviceOptions()">
+                <option value="Android">Android</option>
+                <option value="iOS">iOS</option>
+                <option value="PC">PC</option>
+            </select>
+            <label for="device">Select Device:</label>
+            <select name="device" id="device">
+            </select>
+            <label for="language">Select Language:</label>
+            <select name="language" id="language">
+                <option value="en">en</option>
+                <option value="zh">zh</option>
+            </select>
+            <button type="submit">Start</button>
+        </form>
+        <div id="loading" class="loading">Loading...</div>
+    </div>
+</body>
+</html>

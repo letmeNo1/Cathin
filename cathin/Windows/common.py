@@ -9,6 +9,7 @@ from cathin.common.find_method import MultipleValuesFoundError
 from pygetwindow import Win32Window
 from loguru import logger
 
+
 class WinCommon:
     def __init__(self):
         self.user32 = ctypes.windll.user32

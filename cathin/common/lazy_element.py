@@ -16,9 +16,11 @@ class LazyElement:
 
     def _create_element(self, element_data):
         if self.platform == "windows":
-            from cathin.Windos.windows_element import Element
+            from cathin.Windows.windows_element import Element
         elif self.platform == "android":
             from cathin.Android.android_element import Element
+        elif self.platform == "ios":
+            from cathin.iOS.ios_element import Element
         else:
             raise ValueError(f"Unsupported platform: {self.platform}")
         return Element(element_data)

@@ -3,7 +3,7 @@ import os
 from cathin.common.attributes import Attribute
 from cathin.common.request_api import _call_generate_image_caption_api
 from cathin.common.utils import _crop_and_encode_image
-from cathin.Windos.action import Action
+from cathin.Windows.action import Action
 from loguru import logger
 
 
@@ -17,7 +17,7 @@ class Element(Action):
         self.index = found_element_data[0]
         self.bounds = found_element_data[1]
         self.text = found_element_data[2]
-        self.attribute = Attribute("Windows", self.img, self.all_bounds, found_element_data)
+        self.attribute = Attribute("Windows", result_data)
         self.bounds = (
             self.bounds[0] + self.left,  # left
             self.bounds[1] + self.top,  # top

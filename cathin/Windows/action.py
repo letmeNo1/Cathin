@@ -1,7 +1,4 @@
-import os
-
 import pyautogui
-from loguru import logger
 
 
 class Action:
