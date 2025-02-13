@@ -13,12 +13,19 @@ Cathin是一个基于OCR、图像分类模型和图像描述生成模型构建�
 ===============
 从https://huggingface.co/microsoft/Florence-2-base/tree/main 下载模型权重文件放置在florence_2_weights
 
-然后运行 cathin/console_scripts/ai_model_server.py 来启动模型服务，默认端口号8080
+然后运行 cathin\cathin_server\ai_model_server.py 来启动模型服务，默认端口号8080，需安装依赖
+
+或者直接下载dokcer镜像
+
+docker pull hank550/cathin_server:v1.0
+
+docker run -d --restart always -p 8080:8080 -e PORT=8080 hank550/cathin_server:latest
+
 
 元素定位
 ===============
 
-运行 cathin/console_scripts/cat_ui/main.py
+命令行执行 cat_ui
 
 使用方法
 ==========
