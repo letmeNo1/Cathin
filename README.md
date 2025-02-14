@@ -17,7 +17,7 @@ Cathin是一个基于OCR、图像分类模型和图像描述生成模型构建�
 
 或者直接下载dokcer镜像
 
-`docker pull hank550/cathin_server:v1.0`
+`docker pull hank550/cathin_server:v1.1`
 
 `docker run -d --restart always -p 8080:8080 -e PORT=8080 -e LANG en hank550/cathin_server:v1.1`
 
