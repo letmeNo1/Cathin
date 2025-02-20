@@ -112,6 +112,7 @@ var = {
 
 def get_current_path():
     current_file_path = os.path.abspath(__file__)
+    model_dir = os.path.join(get_current_path(), 'model')
 
     # Get the current script directory
     current_dir = os.path.dirname(current_file_path).replace("console_scripts", "")
@@ -149,31 +150,21 @@ def check_service_status(url):
 
 
 
-def download_and_extract(url, extract_to):
-    # download the file
-    local_filename = url.split('/')[-1]
-    with requests.get(url, stream=True) as r:
-        r.raise_for_status()
-        with open(local_filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                f.write(chunk)
-
+def extract(extract_to):
+    model_dir = os.path.join(get_current_path(), 'model', '1huggingface.zip')
     # Unzip the file
-    with zipfile.ZipFile(local_filename, 'r') as zip_ref:
+    with zipfile.ZipFile(model_dir, 'r') as zip_ref:
         zip_ref.extractall(extract_to)
-
-    # Delete the downloaded zip file
-    os.remove(local_filename)
 
 
 def check_florence_model():
     home_dir = os.path.expanduser("~")
     cache_dir = os.path.join(home_dir, ".cache")
-    download_url = "http://10.86.214.157:8000/AI_model/huggingface.zip"
     huggingface_dir = os.path.join(cache_dir, "huggingface")
 
     if not os.path.exists(huggingface_dir):
-        download_and_extract(download_url, cache_dir)
+        extract(cache_dir)
+
 
 
 def main():
