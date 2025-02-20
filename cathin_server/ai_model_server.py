@@ -112,8 +112,6 @@ var = {
 
 def get_current_path():
     current_file_path = os.path.abspath(__file__)
-    model_dir = os.path.join(get_current_path(), 'model')
-
     # Get the current script directory
     current_dir = os.path.dirname(current_file_path).replace("console_scripts", "")
     return current_dir
