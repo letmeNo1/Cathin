@@ -149,7 +149,7 @@ def check_service_status(url):
 
 
 def extract(extract_to):
-    model_dir = os.path.join(get_current_path(), 'model', '1huggingface.zip')
+    model_dir = os.path.join(get_current_path(), 'model', 'huggingface.zip')
     # Unzip the file
     with zipfile.ZipFile(model_dir, 'r') as zip_ref:
         zip_ref.extractall(extract_to)
