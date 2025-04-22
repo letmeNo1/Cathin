@@ -13,9 +13,8 @@ from cathin.common.request_api import _check_service_health
 
 
 class AndroidDriver:
-    def __init__(self, udid, lang="en"):
+    def __init__(self, udid):
         self.udid = udid
-        self.lang = lang
 
     def _capture_screenshot(self):
         result = subprocess.run(['adb', '-s', self.udid, 'exec-out', 'screencap', '-p'], stdout=subprocess.PIPE)
@@ -45,4 +44,4 @@ class AndroidDriver:
 
     def __call__(self, **query) -> LazyElement:
         _check_service_health()
-        return LazyElement("android",self.__find_element, **query)
+        return LazyElement("android", self.__find_element, **query)

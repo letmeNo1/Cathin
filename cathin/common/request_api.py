@@ -68,4 +68,4 @@ def _check_service_health():
         logger.info("Service is running: {}", response.json())
         return True
     except requests.RequestException as e:
-        raise Exception("Error checking service health: {}, please start server first", e)
+        raise Exception("Error checking service health: {}", e)

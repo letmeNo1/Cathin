@@ -46,8 +46,8 @@ def get_description():
     bounds = request.json.get('bounds')
     platform = request.json.get('platform')
     device = request.json.get('device')
-    language = request.json.get('language')
-    img = take_screenshot(platform, device, language)
+    # language = request.json.get('language')
+    img = take_screenshot(platform, device)
     bounds = tuple(bounds)
     crop_img = _crop_and_encode_image(img, [bounds])[0]
     text = _call_generate_image_caption_api(crop_img).get("descriptions")
@@ -67,10 +67,9 @@ def get_image():
     data = request.json
     platform = data.get('platform')
     device = data.get('device')
-    language = data.get('language')
 
     # 获取截图
-    img = take_screenshot(platform, device, language)
+    img = take_screenshot(platform, device)
     new_image, all_values = process_screenshot(img)
     # 检查 img 是否为 numpy.ndarray
     if isinstance(new_image, np.ndarray):

@@ -2,7 +2,7 @@ from cathin.common.request_api import _call_generate_image_caption_api
 from cathin.common.utils import _crop_and_encode_image
 
 
-from cathin.Android.action import Action
+from cathin.iOS.action import Action
 
 
 from loguru import logger
@@ -22,7 +22,6 @@ class Element(Action):
         self.bounds = found_element_data[1]
         self.text = found_element_data[2]
         self.attribute = Attribute("Android", result_data)
-
         super().__init__(self.udid, self.bounds, self.text, self.package_name)
 
     def left(self, offset=1):

@@ -9,7 +9,7 @@ import numpy as np
 import psutil
 
 from cathin.common.runtime_cache import RunningCache
-from cathin.common.send_request import send_tcp_request
+from cathin.common.send_request import send_http_request
 
 
 class IdbUtils:
@@ -77,15 +77,15 @@ class IdbUtils:
 
     def activate_app(self, package_name):
         exists_port = self.runtime_cache.get_current_running_port()
-        send_tcp_request(exists_port, f"activate_app:{package_name}")
+        send_http_request(exists_port, f"activate_app",{"bundle_id":package_name})
 
     def terminate_app(self, package_name):
         exists_port = self.runtime_cache.get_current_running_port()
-        send_tcp_request(exists_port, f"terminate_app:{package_name}")
+        send_http_request(exists_port, f"terminate_app", {"bundle_id":package_name})
 
     def get_output_device_name(self):
         exists_port = self.runtime_cache.get_current_running_port()
-        respo = send_tcp_request(exists_port, "device_info:get_output_device_name")
+        respo = send_http_request(exists_port, "device_info",{"value":"get_output_device_name"})
         return respo
 
     def stop_app(self, package_name):
@@ -114,30 +114,29 @@ class IdbUtils:
 
     def home(self):
         exists_port = self.runtime_cache.get_current_running_port()
-        return send_tcp_request(exists_port, "device_action:home")
+        send_http_request(exists_port, "device_action", {"action": "home"})
 
     def get_volume(self):
         exists_port = self.runtime_cache.get_current_running_port()
-        return send_tcp_request(exists_port, "device_info:get_output_volume")
+        send_http_request(exists_port, "device_info", {"value": "get_output_volume"})
 
     def turn_volume_up(self):
         exists_port = self.runtime_cache.get_current_running_port()
-        send_tcp_request(exists_port, "device_action:volume_up")
+        send_http_request(exists_port, "device_action", {"action": "volume_up"})
 
     def turn_volume_down(self):
         exists_port = self.runtime_cache.get_current_running_port()
-        send_tcp_request(exists_port, "device_action:volume_down")
+        send_http_request(exists_port, "device_action", {"action": "volume_down"})
 
     def snapshot(self, name, path):
         self.cmd(f'screenshot {path}/{name}.jpg')
 
     def get_pic(self, quality=1.0):
         exists_port = self.runtime_cache.get_current_running_port()
-        return send_tcp_request(exists_port, f"get_jpg_pic:{quality}")
-
+        send_http_request(exists_port, "get_jpg_pic", {"compression_quality": quality})
     def get_image_object(self, quality=100):
         exists_port = self.runtime_cache.get_current_running_port()
-        a = send_tcp_request(exists_port, f"get_jpg_pic:{quality}")
+        a = send_http_request(exists_port, "get_jpg_pic", {"compression_quality": quality})
         nparr = np.frombuffer(a, np.uint8)
         image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         return image
@@ -148,8 +147,10 @@ class IdbUtils:
             current_bundleIdentifier = self.get_current_bundleIdentifier(
                 self.runtime_cache.get_current_running_port())
 
-        send_tcp_request(self.runtime_cache.get_current_running_port(),
-                         f"coordinate_action:{current_bundleIdentifier}:click:{x}:{y}:none")
+        send_http_request(RunningCache(self.udid).get_current_running_port(),
+                          f"coordinate_action",
+                          {"bundle_id": current_bundleIdentifier, "action": "click", "xPixel": x, "yPixel": y,
+                           "action_parms": "none"})
         self.runtime_cache.clear_current_cache_ui_tree()
 
     def get_current_bundleIdentifier(self, port):
@@ -159,5 +160,5 @@ class IdbUtils:
             if item:
                 item = item.split(" ")[0]
                 command = command + f":{item}"
-        package_name = send_tcp_request(port, command)
+        package_name = send_http_request(port, command)
         return package_name

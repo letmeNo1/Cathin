@@ -2,6 +2,7 @@ import random
 import subprocess
 import time
 
+import cv2
 from loguru import logger
 from cathin.common.lazy_element import LazyElement
 from cathin.common.find_method import find_by_method
@@ -19,10 +20,10 @@ class IDBServerError(Exception):
 
 
 class IOSDriver:
-    def __init__(self, udid, lang="en", package_name=None, port="random"):
+    def __init__(self, udid, package_name=None, port="random"):
         self.udid = udid
-        self.lang = lang
         self.idb_utils = IdbUtils(udid)
+        self.package_name = package_name
 
         logger.debug(f"{self.udid}'s test server is being initialized, plaese wait")
         self.__check_idb_server(udid)
@@ -34,7 +35,7 @@ class IOSDriver:
         else:
             logger.debug(f"{self.udid} test server disconnect, restart ")
             self.__init_idb_auto()
-        if package_name is None:
+        if self.package_name is None:
             self.package_name = self.__get_current_bundleIdentifier(RunningCache(udid).get_current_running_port())
         self.runtime_cache.set_action_was_taken(True)
 
@@ -46,10 +47,16 @@ class IOSDriver:
         start_time = time.time()
         while True:
             img = self._capture_screenshot()
+            height, width, _ = img.shape
+            new_height = int(height / 3)
+            new_width = int(width / 3)
+            img = cv2.resize(img, (new_width, new_height), interpolation=cv2.INTER_LINEAR)
+            height, width, _ = img.shape
             all_bounds = get_all_bounds_and_labels(img, query.get('id'))
             find_result = find_by_method(all_bounds, **query)
             if find_result:
-                return {"img": img, "all_bounds": all_bounds, "udid": self.udid, "found_element_data": find_result, "package_name": self.package_name}
+                return {"img": img, "all_bounds": all_bounds, "udid": self.udid, "found_element_data": find_result,
+                        "package_name": self.package_name}
 
             if time.time() - start_time > timeout:
                 raise TimeoutError(f"Operation timed out after {timeout} seconds")

@@ -15,9 +15,8 @@ from screeninfo import get_monitors
 
 
 class WindowsDriver:
-    def __init__(self, lang, window):
+    def __init__(self, window):
         self.window = window
-        self.lang = lang
         try:
             self.window.activate()
             self.window.show()

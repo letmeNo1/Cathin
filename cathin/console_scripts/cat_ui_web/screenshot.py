@@ -34,9 +34,9 @@ def process_screenshot(img):
     return screenshot, all_values
 
 
-def take_screenshot(platform, device_udid, language):
+def take_screenshot(platform, device_udid):
     if platform == "Android":
-        android_driver = AndroidDriver(device_udid, language)
+        android_driver = AndroidDriver(device_udid)
         img = android_driver._capture_screenshot()
         return img
 
@@ -47,6 +47,6 @@ def take_screenshot(platform, device_udid, language):
 
     elif platform == "PC":
         window_obj = getWindowsWithHandle(str(device_udid).split(",")[-1])
-        window_ins = WindowsDriver(language, window_obj)
+        window_ins = WindowsDriver(window_obj)
         img = window_ins._capture_screenshot()
         return img
